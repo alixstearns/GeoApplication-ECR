@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    tools {
+    maven 'M2_HOME'
+}
+    stages{
+        stage('clean oldartifacts '){
+            steps{
+                sh 'mvn clean'
+            }
+        }
+        stage('maven install and package'){
+            steps{
+                sh 'mvn install '
+                sh 'mvn package'
+            }
+        }
+        stage('upload artifact'){
+            steps{
+                sh 'curl -uadmin:AP5mZ1TGxbfJg5s8o7m1rRSRP4i -T \
+                target/bio*.jar \
+                "http://3.86.43.65:8081/artifactory/test/"'
+            }
+        }
+    }
+}
