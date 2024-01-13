@@ -4,6 +4,13 @@ pipeline {
        maven 'M2_HOME'
            }
     stages{
+         stage('Sonarqube scan') {
+            steps {
+                withSonarQubeEnv('sonarQube') {
+        sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=alixstearns_geoapp'
+                }
+            }
+        }
         stage('maven commands'){
            steps {
             sh 'mvn clean test compile install package'
