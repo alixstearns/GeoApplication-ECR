@@ -30,26 +30,20 @@ pipeline {
             "http://3.90.1.5:8081/artifactory/geoapp/"'
             } 
         }
-       stage('docker built and push image to ECR'){
+       stage('docker image built'){
            steps {
-                script {
-                    // Authenticate Docker with ECR
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'your-aws-credentials-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
-                    }
-                    // Build Docker image
-                    sh 'docker build -t  ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER} -f Dockerfile .'
-
-                    // Tag Docker image
-                    sh 'docker tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:latest'
-
-                    // Push Docker image to ECR
-                    sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER}'
-                    sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:latest'
+            sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 180509705435.dkr.ecr.us-east-1.amazonaws.com'
+            sh 'docker build -t geoapp .'
+           }
+       }
+                    
+       stage('push image to ECR'){
+           steps {
+            sh 'docker tag geoapp:latest 180509705435.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
+            sh 'docker push 180509705435.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
             
                } 
            }
 
         }
    }
-}
