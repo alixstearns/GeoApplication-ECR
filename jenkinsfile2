@@ -1,5 +1,12 @@
 pipeline {
     agent any
+
+     environment {
+        AWS_REGION = 'us-east-1'
+        ECR_REPO = 'geoapp'
+        DOCKER_IMAGE = '${ECR_REPO}:${BUILD_NUMBER}'
+        }
+
     tools{
        maven 'M2_HOME'
            }
@@ -21,8 +28,28 @@ pipeline {
                sh 'curl -uadmin:AP8gqnnJFGjpmxzN9a1p4zdFjHe -T \
             target/bio*.jar \
             "http://44.201.137.106:8081/artifactory/geoapp/"'
-            }
-            
+            } 
         }
-    }
+       stage('docker built and push image to ECR'){
+           steps {
+                script {
+                    // Authenticate Docker with ECR
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'your-aws-credentials-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+                    }
+                    // Build Docker image
+                    sh 'docker build -t  ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER} -f Dockerfile .'
+
+                    // Tag Docker image
+                    sh 'docker tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:latest'
+
+                    // Push Docker image to ECR
+                    sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:${BUILD_NUMBER}'
+                    sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/geoapp:latest'
+            
+               } 
+           }
+
+        }
+   }
 }
