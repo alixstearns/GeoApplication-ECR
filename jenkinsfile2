@@ -1,12 +1,5 @@
 pipeline {
     agent any
-
-     environment {
-        AWS_REGION = 'us-east-1'
-        ECR_REPO = 'geoapp'
-        DOCKER_IMAGE = '${ECR_REPO}:${BUILD_NUMBER}'
-        }
-
     tools{
        maven 'M2_HOME'
            }
