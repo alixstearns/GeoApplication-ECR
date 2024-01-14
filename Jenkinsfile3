@@ -2,8 +2,8 @@ pipeline {
     agent {
         label 'ansible'
     }
-    stages ('check current directory') {
-        stage {
+    stages  {
+        stage('check current directory') {
           steps{
     sh 'pwd'
     sh 'whoami'
