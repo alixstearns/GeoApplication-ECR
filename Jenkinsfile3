@@ -2,12 +2,14 @@ pipeline {
     agent {
         label 'ansible'
     }
-    stages {
+    stages ('check current directory') {
         stage {
           steps{
     sh 'pwd'
     sh 'whoami'
     sh "mkdir \$(date '+%Y%m%d_%H%M%S')"
+    sh 'python3 --version'
+    sh 'npm --version'
               }
             }
     }
