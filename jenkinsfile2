@@ -18,9 +18,7 @@ pipeline {
         }
         stage('upload artifact'){
            steps {
-              sh 'curl -uadmin:AP8gqnnJFGjpmxzN9a1p4zdFjHe -T \
-           target/bio*.jar \
-            "http://3.90.1.5:8081/artifactory/geoapp/"'
+              sh 'curl -uadmin:AP8gqnnJFGjpmxzN9a1p4zdFjHe -T target/bio*.jar "http://3.90.1.5:8081/artifactory/geoapp/"'
             } 
         }
        stage('docker image built'){
