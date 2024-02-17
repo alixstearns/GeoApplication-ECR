@@ -5,6 +5,7 @@ pipeline {
            }
     stages{
          stage('Sonarqube scan'){
+        agent {docker { image 'maven:3-amazoncorretto-17-debian' }}
             steps {
                 withSonarQubeEnv('sonarQube') {
         sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=alixstearns_geoapp'
